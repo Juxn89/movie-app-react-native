@@ -1,11 +1,10 @@
 import { useRouter } from 'expo-router'
 import { ActivityIndicator, FlatList, Image, ScrollView, Text, View } from 'react-native'
 
-import { MovieCard, SearchBar } from '@/components'
 import { icons } from '@/constants/icons'
 import { images } from '@/constants/images'
-import { fetchMovies } from '@/services/api'
-import { useFetch } from '@/services/useFetch'
+import { fetchMovies, useFetch } from '@/services/'
+import { MovieCard, SearchBar } from '@/components'
 
 export default function Index() {
 	const router = useRouter()

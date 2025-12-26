@@ -1,2 +1,2 @@
-import { fetchMovies } from './api'
-import { useFetch } from './useFetch'
+export { fetchMovies } from './api'
+export { useFetch } from './useFetch'
