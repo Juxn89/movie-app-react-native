@@ -3,13 +3,19 @@ import { ActivityIndicator, FlatList, Image, ScrollView, Text, View } from 'reac
 
 import { icons } from '@/constants/icons'
 import { images } from '@/constants/images'
-import { fetchMovies, useFetch } from '@/services/'
-import { MovieCard, SearchBar } from '@/components'
+import { fetchMovies, getTrendingSearches, useFetch } from '@/services/'
+import { MovieCard, SearchBar, TrendingCard } from '@/components'
 
 export default function Index() {
 	const router = useRouter()
 	const { data: movies, loading: moviesLoading, error: moviesError } = 
 		useFetch<Movie[]>(() => fetchMovies({ query: '' }))
+
+	const {
+		data: trendingSearches,
+		loading: trendingSearchesLoading,
+		error: errorTrendingSearches
+	} = useFetch(getTrendingSearches)
 
   return (
     <View className="flex-1 bg-primary">
@@ -28,16 +34,38 @@ export default function Index() {
 				<Image source={ icons.logo } className="w-12 h-10 mt-20 mb-5 mx-auto" />
 
 				{
-					moviesLoading 
+					moviesLoading || trendingSearchesLoading
 					? (<ActivityIndicator size='large' color='#0000ff' className='mt-10 self-center' />)
 					: (
-						moviesError
-						? (<Text>Error: { moviesError?.message } </Text>)
+						moviesError || errorTrendingSearches
+						? (<Text>Error: { moviesError?.message || errorTrendingSearches?.message } </Text>)
 						: (<View className='flex-1 mt-5'>
 								<SearchBar
-									onPress={ () => router.push('/search') }
-									placeholder='Seach for a movie'
+									onPress={() => router.push('/search')}
+									placeholder='Seach for a movie' value={''}
 								/>
+
+								{
+									trendingSearches && (
+										<View className='mt-10'>
+											<Text className='text-lg text-white font-bold mt-5 mb-3'>Trending Searches</Text>
+											<FlatList
+												horizontal
+												showsHorizontalScrollIndicator={ false }
+												ItemSeparatorComponent={ () => <View className='w-4' /> }
+												data={ trendingSearches }
+												keyExtractor={(item) => `trending_search_${item.movie_id.toString()}` }
+												renderItem={ ({ item, index }) => (
+													<TrendingCard 
+														index={ index }
+														movie={ item }
+													/>
+												) }
+											/>
+										</View>
+									)
+								}
+
 								<Text className='text-lg text-white font-bold mt-5 mb-3'>Latest Movies</Text>
 								<FlatList
 									data={ movies }
