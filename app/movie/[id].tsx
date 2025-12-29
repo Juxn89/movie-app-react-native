@@ -1,6 +1,7 @@
 import { MovieInfo } from '@/components'
 import { icons } from '@/constants/icons'
 import { fetchMovieDetails, useFetch } from '@/services'
+import { formatMount } from '@/utils'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
@@ -34,8 +35,8 @@ const MovieDetails = () => {
 						<MovieInfo label='Overview' value={ movie?.overview } />
 						<MovieInfo label='Genres' value={ movie?.genres?.map(genre => genre.name).join(' - ') || 'N/A' } />
 						<View className='flex flex-row justify-between w-1/2'>
-							<MovieInfo label='Budget' value={`$${(movie?.budget ?? 0) / 1_000_000} millions`} />
-							<MovieInfo label='Revenue' value={`$${Math.round(movie?.revenue ?? 0) / 1_000_000}`} />
+							<MovieInfo label='Budget' value={`$${ formatMount((movie?.budget ?? 0)) }`} />
+							<MovieInfo label='Revenue' value={`$${ formatMount(Math.round(movie?.revenue ?? 0)) }`} />
 						</View>
 						<MovieInfo label='Production Companies' value={ movie?.production_companies.map(company => company.name ).join(' - ') || 'N/A' } />
 					</View>
