@@ -1,0 +1,82 @@
+version: "3.8"
+
+networks:
+  appwrite-network:
+    driver: bridge
+
+services:
+  appwrite:
+    image: appwrite/appwrite:latest
+    container_name: appwrite
+    restart: unless-stopped
+    ports:
+      - "4756:80"
+      - "4757:443"
+    environment:
+      - _APP_ENV=${APP_ENV}
+      - _APP_OPENSSL_KEY_V1=${APP_OPENSSL_KEY_V1}
+      - _APP_DOMAIN=${APP_DOMAIN}
+      - _APP_DOMAIN_TARGET=${APP_DOMAIN_TARGET}
+      - _APP_PORT=${APP_PORT}
+      - _APP_PORT_HTTPS=${APP_PORT_HTTPS}			
+      - _APP_DB_HOST=mariadb
+      - _APP_DB_PORT=3306
+      - _APP_DB_USER=${MYSQL_USER}
+      - _APP_DB_PASS=${MYSQL_PASSWORD}
+      - _APP_DB_SCHEMA=${MYSQL_DATABASE}      
+      - _APP_REDIS_HOST=redis
+      - _APP_REDIS_PORT=6379
+    volumes:
+      - appwrite:/storage:rw
+      - appwrite:/uploads:rw
+    depends_on:
+      - mariadb
+      - redis
+      - minio
+    networks:
+      - appwrite-network
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: appwrite-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - appwrite-network
+
+  redis:
+    image: redis:7
+    container_name: appwrite-redis
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+    networks:
+      - appwrite-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: appwrite-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio:/data
+    networks:
+      - appwrite-network
+
+volumes:
+  appwrite:
+  mariadb:
+  redis:
+  minio:

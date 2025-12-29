@@ -2,18 +2,39 @@ import { ActivityIndicator, FlatList, Image, StyleSheet, Text, View } from 'reac
 
 import { icons } from '@/constants/icons'
 import { images } from '@/constants/images'
-import { fetchMovies, useFetch } from '@/services'
+import { fetchMovies, updateSearchCount, useFetch } from '@/services'
 import { MovieCard, SearchBar } from '@/components'
 import { useEffect, useState } from 'react'
 
 const Search = () => {
+	const algo: Movie[] = [{
+		id: 0,
+		title: '',
+		adult: false,
+		backdrop_path: '',
+		genre_ids: [],
+		original_language: '',
+		original_title: '',
+		overview: '',
+		popularity: 0,
+		poster_path: '',
+		release_date: '',
+		video: false,
+		vote_average: 0,
+		vote_count: 0
+	}]
 	const [searchQuery, setSearchQuery] = useState<string>('')
 	const { data: movies, loading: moviesLoading, error: moviesError, refetch: loadMovies, reset } = 
 		useFetch<Movie[]>(() => fetchMovies({ query: searchQuery }), false)
 
 	useEffect(() => {
 		const timeoutId = setTimeout(async () => {
-			if(searchQuery.trim()) await loadMovies()
+			if(searchQuery.trim()) {
+				await loadMovies()
+
+				if(movies?.length > 0 && movies?.[0])
+					updateSearchCount(searchQuery, movies[0])
+			}
 			else reset()
 		}, 500)
 
