@@ -1,7 +1,5 @@
 export { TabIcon } from './ui/tab-icon/TabIcon'
-
 export { SearchBar } from './search-bar/SearchBar'
-
 export { MovieCard } from './movie-card/MovieCard'
-
+export { MovieInfo } from './ui/movie-info/MovieInfo'
 export { TrendingCard } from './trending-card/TrendingCard'
